@@ -84,7 +84,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E3902_WUA_gov"
-url = "http://www.wiltshire.gov.uk/council/howthecouncilworks/budgetsandspending/paymentssalariesandexpenses.htm"
+url = "http://www.wiltshire.gov.uk/paymentssalariesandexpenses/councilpayments.htm"
 errors = 0
 data = []
 
