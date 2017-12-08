@@ -84,7 +84,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E3902_WUA_gov"
-url = "http://www.wiltshire.gov.uk/paymentssalariesandexpenses/councilpayments.htmm"
+url = "http://www.wiltshire.gov.uk/paymentssalariesandexpenses/councilpayments.htm#councilpayments2017-2018-Anchor"
 errors = 0
 data = []
 
@@ -96,29 +96,18 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-block = soup.find('div', attrs = {'id':'article'})
-links_block_1 = block.find('table', attrs = {'cellspacing': '0'})
-links = links_block_1.find_all('a')[1:]
+links = soup.find_all('a', 'document')
 for link in links:
     if '.csv' in link['href']:
-        url = 'http://www.wiltshire.gov.uk/' + link['href']
-        csvMth = url.split('-')[1].strip()
-        csvYr = url.split('-')[0].split('/')[-1].strip()
-        csvMth = convert_mth_strings(csvMth.upper())
+        url = 'http://www.wiltshire.gov.uk/' + link['href'].strip('./')
+        title = link['href'].strip('./').split('-')
+        if '20' in title[0]:
+            csvMth = title[1]
+            csvYr = title[0]
+        else:
+            csvMth = title[-2]
+            csvYr = title[-3]
         data.append([csvYr, csvMth, url])
-
-# print(block)
-links_block = block.find_all('table', attrs = {'cellspacing': '0'})[1:]
-for link_block in links_block:
-    links = link_block.find_all('a')[1:]
-    for link in links:
-        if '.csv' in link['href']:
-            url = 'http://www.wiltshire.gov.uk/' + link['href']
-            csvMth = url.split('-')[-2].strip()
-            csvYr = url.split('-')[-3].strip()
-            csvMth = convert_mth_strings(csvMth.upper())
-            data.append([csvYr, csvMth, url])
-
 
 
 #### STORE DATA 1.0
