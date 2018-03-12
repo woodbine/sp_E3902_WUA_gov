@@ -84,7 +84,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E3902_WUA_gov"
-url = "http://www.wiltshire.gov.uk/paymentssalariesandexpenses/councilpayments.htm#councilpayments2017-2018-Anchor"
+url = "http://www.wiltshire.gov.uk/open-data-payments#councilpayments2017-2018-Anchor"
 errors = 0
 data = []
 
@@ -96,18 +96,28 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-links = soup.find_all('a', 'document')
-for link in links:
-    if '.csv' in link['href']:
-        url = 'http://www.wiltshire.gov.uk/' + link['href'].strip('./')
-        title = link['href'].strip('./').split('-')
-        if '20' in title[0]:
-            csvMth = title[1]
-            csvYr = title[0]
-        else:
-            csvMth = title[-2]
-            csvYr = title[-3]
-        data.append([csvYr, csvMth, url])
+blocks = soup.find_all('div', attrs={'id':re.compile("517129")})
+for block in blocks:
+    if block.find_all('tr')[1:]:
+        rows = block.find_all('tr')[1:]
+        for row in rows:
+            link = ''
+            try:
+                link = row.find('font', attrs={'color':'#0066cc'}).text
+            except:
+                try:
+                    link = row.find('a')['href']
+                except:
+                    pass
+            if link:
+                if 'http' not in link and '/downloads/' in link:
+                    url = 'http://www.wiltshire.gov.uk'+link
+                csvMth = row.find_all('td')[1].text[:3]
+                csvYr = row.find_all('td')[2].text
+                if '.csv' in link and '/' not in link:
+                    url = 'http://www.wiltshire.gov.uk/'+link.split()[0]
+                csvMth = convert_mth_strings(csvMth.upper())
+                data.append([csvYr, csvMth, url])
 
 
 #### STORE DATA 1.0
